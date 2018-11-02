@@ -34,8 +34,23 @@ interface ATS {
 
     /// Some functionality should still include a burn (for example slashing ERC20 tokens from a validator)
     function burn(uint128 amount, bytes holderData) public;
-
     function operatorBurn(address from, uint128 amount, bytes holderData, bytes operatorData) public;
+
+    /// @notice Interface for a bridge/relay to execute a `send`
+    /// @dev this name was suggested by Michael Kitchen, who suggested
+    /// it makes sense to thaw an token from solid to liquid
+    ///
+    /// @dev function is called by foreign entity to `thaw` tokens
+    /// to a particular user.
+    function thaw(address localRecipient, uint128 amount, bytes32 bridgeId, bytes bridgeData, bytes32 remoteSender, bytes32 remoteBridgeId, bytes remoteData) public;    
+    
+    /// @notice Interface for a user to execute a `freeze`, which essentially
+    /// is a functionality that locks the token (into the special address)
+    /// 
+    /// @dev function is called by local user to `freeze` tokens thereby
+    /// transferring them to another network.
+    function freeze(bytes32 remoteRecipient, uint128 amount, bytes32 bridgeId, bytes localData) public;
+    function operatorFreeze(address localSender, bytes32 remoteRecipient, uint128 amount, bytes32 bridgeId, bytes localData) public;
 
     /// Event to be emit at the time of contract creation. Rationale behind the event is a few things:
     ///
@@ -56,6 +71,22 @@ interface ATS {
         uint128             _amount,
         bytes               _holderData,
         bytes               _operatorData);
+
+    event Thawed(
+        address indexed localRecipient,
+        uint128 amount,
+        bytes32 indexed bridgeId,
+        bytes bridgeData,
+        bytes32 indexed remoteSender,
+        bytes32 remoteBridgeId,
+        bytes remoteData);
+
+    event Froze(
+        address indexed localSender,
+        bytes32 indexed remoteRecipient,
+        uint128 amount,
+        bytes32 indexed bridgeId,
+        bytes localData);
 
     event Minted(
         address indexed     _operator,
