@@ -6,9 +6,8 @@ import { ERC20 } from "./ERC20.sol";
 import { AionInterfaceImplementer } from "./AionInterfaceImplementer.sol";
 import { ATSTokenRecipient } from "./ATSTokenRecipient.sol";
 import { ATSTokenSender } from "./ATSTokenSender.sol";
-import { TokenBridgeRegistryUserInterface } from "./TokenBridgeInterface.sol";
 
-contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUserInterface {
+contract ATSBase is ATS, ERC20, AionInterfaceImplementer {
     using SafeMath for uint128;
 
     /* -- Constants -- */
@@ -135,7 +134,9 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
     /// @return `true` if `_addr` is a regular address (not a contract)
     ///
     /// Ideally, we should propose a better system that extcodesize
-    /// TODO: CHANGE ME, going to require a resolution on best approach
+    ///
+    /// *** TODO: CHANGE ME, going to require a resolution on best approach ***
+    ///
     /// Given that we won't be able to detect code size.
     ///
     /// @param _addr The address to be checked
@@ -264,6 +265,39 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
 
     function liquidSupply() public constant returns (uint128) {
         return mTotalSupply.sub(balanceOf(this));
+    }
+
+
+    /* -- Cross Chain Functionality -- */
+
+    function thaw(
+        address localRecipient,
+        uint128 amount,
+        bytes32 bridgeId,
+        bytes bridgeData,
+        bytes32 remoteSender,
+        bytes32 remoteBridgeId,
+        bytes remoteData)
+    public {
+
+    }
+
+    function freeze(
+        bytes32 remoteRecipient,
+        uint128 amount,
+        bytes32 bridgeId,
+        bytes localData)
+    public {
+
+    }
+
+    function operatorFreeze(address localSender,
+        bytes32 remoteRecipient,
+        uint128 amount,
+        bytes32 bridgeId,
+        bytes localData)
+    public {
+
     }
 
     /* -- ERC20 Functionality -- */
