@@ -4,7 +4,7 @@ contract AionInterfaceRegistry {
     function getManager(address target) public constant returns(address);
     function setManager(address target, address manager) public;
     function getInterfaceDelegate(address target, bytes32 interfaceHash) public constant returns (address);
-    function setInterfaceDelegate(address target, bytes32 interfaceHash, address delegate) external;
+    function setInterfaceDelegate(address target, bytes32 interfaceHash, address delegate) public;
 }
 
 contract AionInterfaceImplementer {
