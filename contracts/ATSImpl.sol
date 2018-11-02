@@ -22,7 +22,6 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
     string internal mSymbol;
     uint128 internal mGranularity;
     uint128 internal mTotalSupply;
-    address internal mSpecialAddress;
 
     mapping(address => uint128) internal mBalances;
     mapping(address => mapping(address => bool)) internal mAuthorized;
@@ -41,18 +40,13 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
         string _name,
         string _symbol,
         uint128 _granularity,
-        uint128 _totalSupply,
-        address _specialAddress
+        uint128 _totalSupply
     ) {
         require(_granularity >= 1);
         mName = _name;
         mSymbol = _symbol;
         mTotalSupply = _totalSupply;
         mGranularity = _granularity;
-        mSpecialAddress = _specialAddress;
-
-        // initialize special address account
-        initializeSpecialAddress();
 
         // register onto CIR
         setInterfaceDelegate("AIP004Token", this);
@@ -71,9 +65,6 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
 
     /// @return the total supply of the token
     function totalSupply() public constant returns (uint128) { return mTotalSupply; }
-
-    /// @return the special address of the token
-    function specialAddress() public constant returns (address) { return mSpecialAddress; }
 
     /// @notice Return the account balance of some account
     /// @param _tokenHolder Address for which the balance is returned
@@ -133,20 +124,6 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
 
     /* -- Helper Functions -- */
 
-    /// @notice Helper function that initializes the `specialAddress`
-    /// checks that the specialAddress is indeed not in the user space
-    /// and is in a pre-destined reserved space only available for
-    /// `non-user` addresses.
-    ///
-    /// @dev we don't apply checks for `totalSupply` here because
-    /// the user could want to set a supply of `0` tokens.
-    function initializeSpecialAddress() internal {
-        /// check that the used address is not in user space
-        require(mSpecialAddress & addressTypeMask == zeroAddress);
-        mBalances[mSpecialAddress] = totalSupply;
-        Created(totalSupply, mSpecialAddress);
-    }
-
     /// @notice Internal function that ensures `_amount` is multiple of the granularity
     /// @param _amount The quantity that want's to be checked
     function requireMultiple(uint128 _amount) internal constant {
@@ -198,7 +175,7 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
         callSender(_operator, _from, _to, _amount, _userData, _operatorData);
 
         require(_to != address(0));             // forbid sending to 0x0 (=burning)
-        require(_to != mSpecialAddress);         // forbid sending to special address (=locking)
+        require(_to != address(this));          // forbid sending to the contract itself
         require(mBalances[_from] >= _amount);   // ensure enough funds
 
         mBalances[_from] = mBalances[_from].sub(_amount);
@@ -286,7 +263,7 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUse
     }
 
     function liquidSupply() public constant returns (uint128) {
-        return totalSupply.sub(balanceOf(mSpecialAddress));
+        return mTotalSupply.sub(balanceOf(this));
     }
 
     /* -- ERC20 Functionality -- */
