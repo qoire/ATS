@@ -3,12 +3,12 @@ pragma solidity 0.4.15;
 import { SafeMath } from "./SafeMath.sol";
 import { ATS } from "./ATS.sol";
 import { ERC20 } from "./ERC20.sol";
-import { ContractInterfaceImplementer } from "./ContractInterfaceImplementer.sol";
+import { AionInterfaceImplementer } from "./AionInterfaceImplementer.sol";
 import { ATSTokenRecipient } from "./ATSTokenRecipient.sol";
 import { ATSTokenSender } from "./ATSTokenSender.sol";
 import { TokenBridgeRegistryUserInterface } from "./TokenBridgeInterface.sol";
 
-contract ATSBase is ATS, ERC20, ContractInterfaceImplementer, TokenBridgeRegistryUserInterface {
+contract ATSBase is ATS, ERC20, AionInterfaceImplementer, TokenBridgeRegistryUserInterface {
     using SafeMath for uint128;
 
     /* -- Constants -- */
@@ -55,7 +55,7 @@ contract ATSBase is ATS, ERC20, ContractInterfaceImplementer, TokenBridgeRegistr
         initializeSpecialAddress();
 
         // register onto CIR
-        setInterfaceImplementation("ATS", this);
+        setInterfaceDelegate("AIP004Token", this);
     }
 
     /* -- ERC777 Interface Implementation -- */
@@ -251,7 +251,7 @@ contract ATSBase is ATS, ERC20, ContractInterfaceImplementer, TokenBridgeRegistr
     )
         internal
     {
-        address recipientImplementation = interfaceAddr(_to, "ATSRecipient");
+        address recipientImplementation = getInterfaceDelegate(_to, "AIP004TokenRecipient");
         if (recipientImplementation != 0) {
             ATSTokenRecipient(recipientImplementation).tokensReceived(
                 _operator, _from, _to, _amount, _userData, _operatorData);
@@ -280,7 +280,7 @@ contract ATSBase is ATS, ERC20, ContractInterfaceImplementer, TokenBridgeRegistr
     )
         internal
     {
-        address senderImplementation = interfaceAddr(_from, "ATSSender");
+        address senderImplementation = getInterfaceDelegate(_from, "AIP004TokenSender");
         if (senderImplementation == 0) { return; }
         ATSTokenSender(senderImplementation).tokensToSend(_operator, _from, _to, _amount, _userData, _operatorData);
     }

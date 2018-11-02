@@ -5,6 +5,8 @@ pragma solidity 0.4.15;
 /// support for ERC165 (which is one of the proposed features)
 /// for 820 has been removed.
 
+/// @@@ DEPRECATED see AionInterfaceRegistry.sol
+/// @@@ DEPRECATED see https://github.com/aionnetwork/AIP/pull/11
 interface ContractInterfaceRegistryImplementer {
     /// @notice Contracts that implement an interferce in behalf of another contract must return true
     /// @param addr Address that the contract woll implement the interface in behalf of
