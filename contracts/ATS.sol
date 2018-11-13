@@ -74,7 +74,7 @@ interface ATS {
     event Created(
         uint128 indexed     _totalSupply,
         /// This is a horrible name I know, up for debate
-        address indexed     _specialAddress);
+        address indexed     _creator);
 
     event Sent(
         address indexed     _operator,

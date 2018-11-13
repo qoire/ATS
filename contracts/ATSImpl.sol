@@ -59,13 +59,15 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer {
         mTotalSupply = _totalSupply;
         mGranularity = _granularity;
 
+        initialize(_totalSupply);
+
         // register onto CIR
         setInterfaceDelegate("AIP004Token", this);
     }
 
     function initialize(uint128 _totalSupply) internal {
-        mBalances[address(this)] = _totalSupply;
-        Created(_totalSupply, address(this));
+        mBalances[msg.sender] = _totalSupply;
+        Created(_totalSupply, msg.sender);
     }
 
     /* -- ERC777 Interface Implementation -- */
