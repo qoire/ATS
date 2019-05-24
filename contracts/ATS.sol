@@ -71,7 +71,7 @@ interface ATS {
     ///
     /// * It indicates the `totalSupply` of the network. `totalSupply` is very important in
     ///   our standard, therefore it makes sense to include it as an emission.
-    event Created(
+    event ATSTokenCreated(
         uint128 indexed     _totalSupply,
         /// This is a horrible name I know, up for debate
         address indexed     _creator);
