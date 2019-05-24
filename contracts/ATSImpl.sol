@@ -67,7 +67,7 @@ contract ATSBase is ATS, ERC20, AionInterfaceImplementer {
 
     function initialize(uint128 _totalSupply) internal {
         mBalances[msg.sender] = _totalSupply;
-        Created(_totalSupply, msg.sender);
+        ATSTokenCreated(_totalSupply, msg.sender);
     }
 
     /* -- ERC777 Interface Implementation -- */
